@@ -1,6 +1,6 @@
 {
     "version": "1.20",
-    "homepage": "None",
+    "homepage": "https://www.nirsoft.net/",
     "url": "https://www.nirsoft.net/packages/videoaudiotools.zip",
     "bin": "SoundVolumeView.exe",
     "shortcuts": [
