@@ -177,12 +177,12 @@ def main() -> int:
     req = requests.get(PADS_ZIP_URL, headers=SI_HEADERS, timeout=60)
     pause_between_requests()
     req.raise_for_status()
-    
+
     start = time.time()
     done = 0
     with zipfile.ZipFile(BytesIO(req.content)) as z:
         total_pads = len(z.namelist())
-        for pad_name in z.namelist(): 
+        for pad_name in z.namelist():
             with z.open(pad_name) as zh:
                 pad_data = str(zh.read(), "utf-8")
                 done += 1
@@ -239,10 +239,13 @@ def do_padfile(pad_name: str, pad_data: str, urls: Urls) -> Urls:
         pass
     web_info = root.find("Web_Info")
     try:
-        website = str(web_info.find("Application_URLs").find("Application_Info_URL").text)  # type: ignore
+        url = web_info.find("Application_URLs").find("Application_Info_URL").text
+        website = str(url) if url else ""
     except Exception:
         pass
     website = website.replace("http:", "https:")
+    if not website:
+        website = "https://www.nirsoft.net/"
     try:
         download = str(web_info.find("Download_URLs").find("Primary_Download_URL").text)  # type: ignore
     except Exception:
@@ -328,7 +331,7 @@ def do_padfile(pad_name: str, pad_data: str, urls: Urls) -> Urls:
         manifest.pop("architecture")
         manifest["url"] = download
         manifest["hash"] = hash32
-        
+
     # See https://github.com/ScoopInstaller/Nirsoft/issues/17
     # See https://github.com/ScoopInstaller/Nirsoft/issues/46
     password = PASSWORDS.get(name, '')
@@ -365,7 +368,7 @@ def rewrite_json(json_file: str, manifest: dict[str, T.Any]) -> bool:
                 return True
 
     print(f"Writing {json_file}")
-    with open(json_file, "w", encoding="utf-8", newline="\n") as j:
+    with open(json_file, "w", encoding="utf-8", newline="\r\n") as j:
         json.dump(manifest, j, indent=4)
     return True
 
